@@ -1,0 +1,17 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" tools:context="com.bharatramnani.mymovies.MoviesFragment">
+
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/movies_gridview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:columnWidth="@dimen/gridview_column_width"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="@dimen/gridview_vertical_spacing"
+        android:horizontalSpacing="@dimen/gridview_horizontal_spacing"
+        android:gravity="center"
+        android:stretchMode="columnWidth"
+        />
+
+</FrameLayout>
