@@ -1,11 +1,21 @@
 <resources>
+
+    <!--MainActivity-->
+    <dimen name="main_activity_horizontal_margin">0dp</dimen>
+    <dimen name="main_activity_vertical_margin">0dp</dimen>
+
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">0dp</dimen>
-    <dimen name="activity_vertical_margin">0dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!--Movie Poster-->
     <dimen name="gridview_horizontal_spacing">0dp</dimen>
     <dimen name="gridview_vertical_spacing">0dp</dimen>
     <dimen name="gridview_column_width">140dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!--Detail Activity-->
+    <dimen name="textview_headings_size">12dp</dimen>
+    <dimen name="textview_values_size">18dp</dimen>
 
 </resources>

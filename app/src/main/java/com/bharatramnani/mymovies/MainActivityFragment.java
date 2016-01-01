@@ -1,13 +1,18 @@
 package com.bharatramnani.mymovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -25,23 +30,33 @@ import java.net.URL;
 import java.util.ArrayList;
 
 
-public class MoviesFragment extends Fragment {
+public class MainActivityFragment extends Fragment {
 
     public ArrayAdapter<Movie> mMoviesAdapter;
+    Movie[] movies;
+    private ArrayList<Movie> moviesList;
 
-    public MoviesFragment() {
+    public MainActivityFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(savedInstanceState == null || !savedInstanceState.containsKey("savedMovies")) {
+            moviesList = new ArrayList<Movie>();
+            updateMovies();
+        }
+        else {
+            moviesList = savedInstanceState.getParcelableArrayList("savedMovies");
+        }
+        setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateMovies();
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        updateMovies();
+//    }
 
     private void updateMovies() {
 
@@ -49,20 +64,56 @@ public class MoviesFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("savedMovies", moviesList);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_movies_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.action_sort) {
+            Toast.makeText(getContext(), "Start settings for sort. TODO.", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         mMoviesAdapter = new MoviesListAdapter(
                 getActivity(),
-                new ArrayList<Movie>()
+                moviesList
         );
 
-        View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridView = (GridView) rootView.findViewById(R.id.movies_gridview);
         gridView.setAdapter(mMoviesAdapter);
 
-        updateMovies();
+//        updateMovies();
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie movie = mMoviesAdapter.getItem(position);
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra("MovieDetails", movie);
+                startActivity(intent);
+
+            }
+        });
+
+
 
         return rootView;
     }
@@ -73,11 +124,6 @@ public class MoviesFragment extends Fragment {
 
         @Override
         protected Movie[] doInBackground(String... params) {
-
-
-//            if (params.length == 0) {
-//                return null;
-//            }
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -105,6 +151,7 @@ public class MoviesFragment extends Fragment {
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
+                Log.v(LOG_TAG, "Connecting again.");
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
@@ -163,10 +210,17 @@ public class MoviesFragment extends Fragment {
         @Override
         protected void onPostExecute(Movie[] movies) {
             if (movies != null) {
-                mMoviesAdapter.clear();
-                mMoviesAdapter.addAll(movies);
 
-                Toast.makeText(getContext(), "Added movies", Toast.LENGTH_SHORT).show();
+//                Option 1
+//                mMoviesAdapter.clear();
+//                mMoviesAdapter.addAll(movies);
+
+
+//              Option 2
+                for (Movie m : movies)
+                    moviesList.add(m);
+                mMoviesAdapter.notifyDataSetChanged();
+
             }
         }
 
@@ -189,7 +243,7 @@ public class MoviesFragment extends Fragment {
 
             int numberOfMovies = moviesArray.length();
 
-            Movie[] movies = new Movie[numberOfMovies];
+            movies = new Movie[numberOfMovies];
 
             for (int i=0; i<numberOfMovies; i++) {
 
@@ -202,12 +256,10 @@ public class MoviesFragment extends Fragment {
                 String posterPartialUrl = movieObject.getString(TMDB_POSTER);
 
                 String posterUrl = IMAGE_BASE_URL + POSTER_SIZE + posterPartialUrl;
-//                String posterUrl = "http://i.imgur.com/rFLNqWI.jpg";
+//                      posterUrl = "http://i.imgur.com/rFLNqWI.jpg";
 
                 Movie movie = new Movie(title, posterUrl, overview, voteAvg, releaseDate);
                 movies[i] = movie;
-                Log.v(LOG_TAG, "MOVIE: " + movie);
-
             }
 
 
