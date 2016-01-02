@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,13 +32,12 @@ import java.util.ArrayList;
 
 public class MainActivityFragment extends Fragment {
 
+    private final String KEY_SAVED_MOVIES_LIST = "saved_movies_list";
     public ArrayAdapter<Movie> mMoviesAdapter;
-    Movie[] movies;
     private ArrayList<Movie> moviesList;
-
-//    final String SORT_BY_POPULARITY = "sort_by_popularity";
-//    final String SORT_BY_RATINGS = "sort_by_ratings";
-
+    ProgressBar progressBar;
+    GridView gridView;
+    Movie[] movies;
 
     public MainActivityFragment() {
     }
@@ -45,13 +45,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState == null || !savedInstanceState.containsKey("savedMovies")) {
-            moviesList = new ArrayList<Movie>();
-            updateMovies(R.string.action_sort_by_popularity);
-        }
-        else {
-            moviesList = savedInstanceState.getParcelableArrayList("savedMovies");
-        }
         setHasOptionsMenu(true);
     }
 
@@ -68,7 +61,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("savedMovies", moviesList);
+        outState.putParcelableArrayList(KEY_SAVED_MOVIES_LIST, moviesList);
         super.onSaveInstanceState(outState);
     }
 
@@ -97,17 +90,10 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mMoviesAdapter = new MoviesListAdapter(
-                getActivity(),
-                moviesList
-        );
-
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        GridView gridView = (GridView) rootView.findViewById(R.id.movies_gridview);
-        gridView.setAdapter(mMoviesAdapter);
-
-//        updateMovies();
+        gridView = (GridView) rootView.findViewById(R.id.movies_gridview);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.loading_progress_bar);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -120,7 +106,20 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
+        if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_MOVIES_LIST)) {
+            moviesList = new ArrayList<Movie>();
+            updateMovies(R.string.action_sort_by_popularity);
+        }
+        else {
+            moviesList = savedInstanceState.getParcelableArrayList(KEY_SAVED_MOVIES_LIST);
+        }
 
+        mMoviesAdapter = new MoviesListAdapter(
+                getActivity(),
+                moviesList
+        );
+
+        gridView.setAdapter(mMoviesAdapter);
 
         return rootView;
     }
@@ -225,7 +224,19 @@ public class MainActivityFragment extends Fragment {
 
         }
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
 
+            if (progressBar == null)
+                progressBar = (ProgressBar) getView().findViewById(R.id.loading_progress_bar);
+            if (gridView == null)
+                gridView = (GridView) getView().findViewById(R.id.movies_gridview);
+
+            gridView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+
+        }
 
         @Override
         protected void onPostExecute(Movie[] movies) {
@@ -240,9 +251,12 @@ public class MainActivityFragment extends Fragment {
                 moviesList.clear();
                 for (Movie m : movies)
                     moviesList.add(m);
-                mMoviesAdapter.notifyDataSetChanged();
-
             }
+
+            progressBar.setVisibility(View.GONE);
+            gridView.setVisibility(View.VISIBLE);
+            mMoviesAdapter.notifyDataSetChanged();
+
         }
 
 
