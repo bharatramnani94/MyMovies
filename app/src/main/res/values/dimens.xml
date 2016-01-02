@@ -15,7 +15,8 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <!--Detail Activity-->
-    <dimen name="textview_headings_size">12dp</dimen>
-    <dimen name="textview_values_size">18dp</dimen>
+    <dimen name="textview_headings_size">14sp</dimen>
+    <dimen name="textview_values_size">20sp</dimen>
+    <dimen name="textview_body_text_size">14sp</dimen>
 
 </resources>

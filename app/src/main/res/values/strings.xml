@@ -2,7 +2,8 @@
     <string name="app_name">MyMovies</string>
 
     <!--Menu Options / Action Bar Buttons-->
-    <string name="action_sort">Sort</string>
+    <string name="action_sort_by_popularity">Most Popular</string>
+    <string name="action_sort_by_ratings">Highest Rated</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="action_settings">Settings</string>
 

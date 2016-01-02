@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +35,10 @@ public class MainActivityFragment extends Fragment {
     Movie[] movies;
     private ArrayList<Movie> moviesList;
 
+//    final String SORT_BY_POPULARITY = "sort_by_popularity";
+//    final String SORT_BY_RATINGS = "sort_by_ratings";
+
+
     public MainActivityFragment() {
     }
 
@@ -44,7 +47,7 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if(savedInstanceState == null || !savedInstanceState.containsKey("savedMovies")) {
             moviesList = new ArrayList<Movie>();
-            updateMovies();
+            updateMovies(R.string.action_sort_by_popularity);
         }
         else {
             moviesList = savedInstanceState.getParcelableArrayList("savedMovies");
@@ -58,9 +61,9 @@ public class MainActivityFragment extends Fragment {
 //        updateMovies();
 //    }
 
-    private void updateMovies() {
+    private void updateMovies(int sort_criteria) {
 
-        new FetchMoviesTask().execute();
+        new FetchMoviesTask().execute(sort_criteria);
     }
 
     @Override
@@ -78,8 +81,12 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-        if (id == R.id.action_sort) {
-            Toast.makeText(getContext(), "Start settings for sort. TODO.", Toast.LENGTH_SHORT).show();
+        if (id == R.id.action_sort_by_popularity) {
+            updateMovies(R.string.action_sort_by_popularity);
+            return true;
+        }
+        else if (id == R.id.action_sort_by_ratings) {
+            updateMovies(R.string.action_sort_by_ratings);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -118,12 +125,12 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    public class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
+    public class FetchMoviesTask extends AsyncTask<Integer, Void, Movie[]> {
 
         public String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
         @Override
-        protected Movie[] doInBackground(String... params) {
+        protected Movie[] doInBackground(Integer... params) {
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -133,7 +140,20 @@ public class MainActivityFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String moviesJsonStr = null;
 
-            String movie_sort_type = "popular";
+            String movie_sort_type;
+
+            int sort_criteria = params[0];
+
+            Log.i(LOG_TAG, String.valueOf(R.string.action_sort_by_ratings));
+
+            if (sort_criteria == R.string.action_sort_by_ratings)
+                movie_sort_type = "top_rated";
+            else
+                // Sort by popularity
+                movie_sort_type = "popular";
+
+
+
             final String API_KEY = "INSERT_THE_MOVIE_DB_API_KEY_HERE";
 
             try {
@@ -217,6 +237,7 @@ public class MainActivityFragment extends Fragment {
 
 
 //              Option 2
+                moviesList.clear();
                 for (Movie m : movies)
                     moviesList.add(m);
                 mMoviesAdapter.notifyDataSetChanged();
