@@ -15,6 +15,8 @@ import com.squareup.picasso.Picasso;
  */
 public class DetailActivityFragment extends Fragment {
 
+    private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
+
     Movie movie;
 
     public DetailActivityFragment() {
@@ -24,9 +26,7 @@ public class DetailActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         movie = (Movie) getActivity().getIntent().getParcelableExtra("MovieDetails");
-
         getActivity().setTitle(movie.movie_title);
-
     }
 
     @Override
