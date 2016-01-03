@@ -1,6 +1,8 @@
 package com.bharatramnani.mymovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,9 +34,16 @@ import java.util.ArrayList;
 
 public class MainActivityFragment extends Fragment {
 
-    private final String KEY_SAVED_MOVIES_LIST = "saved_movies_list";
+    private static final String KEY_SAVED_MOVIES_LIST = "saved_movies_list";
+    private static final String KEY_SHARED_PREFERENCES = "shared_preferences";
+    private static final String KEY_PREFERENCE_SORT_ORDER = "preference_sort_order";
+    private static final String SORT_TYPE_POPULAR = "popular";
+    private static final String SORT_TYPE_RATINGS = "top_rated";
+
+
     public ArrayAdapter<Movie> mMoviesAdapter;
     private ArrayList<Movie> moviesList;
+    SharedPreferences sharedPreferences;
     ProgressBar progressBar;
     GridView gridView;
     Movie[] movies;
@@ -76,10 +85,20 @@ public class MainActivityFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_sort_by_popularity) {
             updateMovies(R.string.action_sort_by_popularity);
+
+//            Save the sort order for the next launch
+            SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
+            preferenceEditor.putString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_POPULAR);
+            preferenceEditor.commit();
             return true;
         }
         else if (id == R.id.action_sort_by_ratings) {
             updateMovies(R.string.action_sort_by_ratings);
+//            Save the sort order for the next launch
+            SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
+            preferenceEditor.putString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_RATINGS);
+            preferenceEditor.commit();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -108,7 +127,16 @@ public class MainActivityFragment extends Fragment {
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_MOVIES_LIST)) {
             moviesList = new ArrayList<Movie>();
-            updateMovies(R.string.action_sort_by_popularity);
+
+//            Retrieve the sort order saved
+            sharedPreferences = getActivity().getSharedPreferences(KEY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+//            If no sort order preference found, then default to sort by popularity
+            String sort_preference = sharedPreferences.getString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_POPULAR);
+
+            if (sort_preference.equals(SORT_TYPE_POPULAR))       // Sort by popularity
+                updateMovies(R.string.action_sort_by_popularity);
+            else                                                    // Sort by ratings
+                updateMovies(R.string.action_sort_by_ratings);
         }
         else {
             moviesList = savedInstanceState.getParcelableArrayList(KEY_SAVED_MOVIES_LIST);
@@ -143,13 +171,12 @@ public class MainActivityFragment extends Fragment {
 
             int sort_criteria = params[0];
 
-            Log.i(LOG_TAG, String.valueOf(R.string.action_sort_by_ratings));
-
             if (sort_criteria == R.string.action_sort_by_ratings)
-                movie_sort_type = "top_rated";
+                // Sort by ratings
+                movie_sort_type = SORT_TYPE_RATINGS;
             else
                 // Sort by popularity
-                movie_sort_type = "popular";
+                movie_sort_type = SORT_TYPE_POPULAR;
 
 
 
