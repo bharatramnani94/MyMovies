@@ -37,8 +37,8 @@ public class MainActivityFragment extends Fragment {
     private static final String KEY_SAVED_MOVIES_LIST = "saved_movies_list";
     private static final String KEY_SHARED_PREFERENCES = "shared_preferences";
     private static final String KEY_PREFERENCE_SORT_ORDER = "preference_sort_order";
-    private static final String SORT_TYPE_POPULAR = "popular";
-    private static final String SORT_TYPE_RATINGS = "top_rated";
+    private static final String SORT_TYPE_POPULAR = "popularity.desc";
+    private static final String SORT_TYPE_RATINGS = "vote_average.desc";
 
 
     public ArrayAdapter<Movie> mMoviesAdapter;
@@ -184,12 +184,14 @@ public class MainActivityFragment extends Fragment {
 
             try {
 
-                final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/movie/";
+                final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/discover/movie/";
                 final String API_KEY_PARAM = "api_key";
+                final String SORT_BY_PARAM = "sort_by";
 
-                Uri builtUri = Uri.parse(MOVIES_BASE_URL + movie_sort_type)
+                Uri builtUri = Uri.parse(MOVIES_BASE_URL)
                         .buildUpon()
                         .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                        .appendQueryParameter(SORT_BY_PARAM, movie_sort_type)
                         .build();
 
                 URL url = new URL(builtUri.toString());

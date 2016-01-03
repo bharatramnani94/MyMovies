@@ -9,5 +9,5 @@
 
     <!--Detail Activity-->
     <string name="rating_heading_text">Ratings</string>
-    <string name="release_date_heading_text">Releasing</string>
+    <string name="release_date_heading_text">Released</string>
 </resources>
