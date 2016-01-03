@@ -187,11 +187,14 @@ public class MainActivityFragment extends Fragment {
                 final String MOVIES_BASE_URL = "http://api.themoviedb.org/3/discover/movie/";
                 final String API_KEY_PARAM = "api_key";
                 final String SORT_BY_PARAM = "sort_by";
+                final String VOTE_COUNT_PARAM = "vote_count.gte";
+                final String VOTE_COUNT_VALUE = "50";
 
                 Uri builtUri = Uri.parse(MOVIES_BASE_URL)
                         .buildUpon()
                         .appendQueryParameter(API_KEY_PARAM, API_KEY)
                         .appendQueryParameter(SORT_BY_PARAM, movie_sort_type)
+                        .appendQueryParameter(VOTE_COUNT_PARAM, VOTE_COUNT_VALUE)
                         .build();
 
                 URL url = new URL(builtUri.toString());
