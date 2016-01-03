@@ -180,7 +180,8 @@ public class MainActivityFragment extends Fragment {
 
 
 
-            final String API_KEY = "INSERT_THE_MOVIE_DB_API_KEY_HERE";
+            // Insert your own API key for TheMovieDb.org here
+            final String API_KEY = BuildConfig.THE_MOVIE_DB_API_KEY;
 
             try {
 
