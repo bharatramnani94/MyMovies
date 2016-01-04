@@ -10,4 +10,6 @@
     <!--Detail Activity-->
     <string name="rating_heading_text">Ratings</string>
     <string name="release_date_heading_text">Released</string>
+    <string name="message_cannot_connect">Cannot connect to internet.</string>
+    <string name="button_message_cannot_connect">Try again</string>
 </resources>

@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
@@ -44,9 +46,13 @@ public class MainActivityFragment extends Fragment {
     public ArrayAdapter<Movie> mMoviesAdapter;
     private ArrayList<Movie> moviesList;
     SharedPreferences sharedPreferences;
+    LinearLayout cannot_connect_layout;
     ProgressBar progressBar;
     GridView gridView;
     Movie[] movies;
+    String sort_preference;
+
+
 
     public MainActivityFragment() {
     }
@@ -57,11 +63,7 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        updateMovies();
-//    }
+
 
     private void updateMovies(int sort_criteria) {
 
@@ -83,6 +85,7 @@ public class MainActivityFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
+
         if (id == R.id.action_sort_by_popularity) {
             updateMovies(R.string.action_sort_by_popularity);
 
@@ -113,6 +116,8 @@ public class MainActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.movies_gridview);
         progressBar = (ProgressBar) rootView.findViewById(R.id.loading_progress_bar);
+        cannot_connect_layout = (LinearLayout) rootView.findViewById(R.id.container_cannot_connect);
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -125,13 +130,13 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
+//            Retrieve the sort order saved
+        sharedPreferences = getActivity().getSharedPreferences(KEY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
+//            If no sort order preference found, then default to sort by popularity
+        sort_preference = sharedPreferences.getString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_POPULAR);
+
         if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_MOVIES_LIST)) {
             moviesList = new ArrayList<Movie>();
-
-//            Retrieve the sort order saved
-            sharedPreferences = getActivity().getSharedPreferences(KEY_SHARED_PREFERENCES, Context.MODE_PRIVATE);
-//            If no sort order preference found, then default to sort by popularity
-            String sort_preference = sharedPreferences.getString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_POPULAR);
 
             if (sort_preference.equals(SORT_TYPE_POPULAR))       // Sort by popularity
                 updateMovies(R.string.action_sort_by_popularity);
@@ -148,6 +153,21 @@ public class MainActivityFragment extends Fragment {
         );
 
         gridView.setAdapter(mMoviesAdapter);
+
+
+        //        Setting onclick to refresh button
+        Button refresh_button = (Button)cannot_connect_layout.findViewById(R.id.button_cannot_connect);
+        refresh_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cannot_connect_layout.setVisibility(View.GONE);
+                if (sort_preference.equals(SORT_TYPE_POPULAR))       // Sort by popularity
+                    updateMovies(R.string.action_sort_by_popularity);
+                else                                                    // Sort by ratings
+                    updateMovies(R.string.action_sort_by_ratings);
+            }
+        });
+
 
         return rootView;
     }
@@ -202,13 +222,14 @@ public class MainActivityFragment extends Fragment {
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-                Log.v(LOG_TAG, "Connecting again.");
+                Log.v(LOG_TAG, "Fetching data from API.");
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
                     // Nothing to do.
+//                    displayCannotConnectError();
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -283,14 +304,20 @@ public class MainActivityFragment extends Fragment {
                 moviesList.clear();
                 for (Movie m : movies)
                     moviesList.add(m);
+
+                gridView.setVisibility(View.VISIBLE);
+                mMoviesAdapter.notifyDataSetChanged();
+
+            }
+            else {
+//                Unable to fetch data
+//                Toast.makeText(getContext(), "Unable to fetch data, Try again later.", Toast.LENGTH_SHORT).show();
+                cannot_connect_layout.setVisibility(View.VISIBLE);
             }
 
             progressBar.setVisibility(View.GONE);
-            gridView.setVisibility(View.VISIBLE);
-            mMoviesAdapter.notifyDataSetChanged();
 
         }
-
 
 
         private Movie[] getMoviesFromJson(String moviesJsonStr) throws JSONException{

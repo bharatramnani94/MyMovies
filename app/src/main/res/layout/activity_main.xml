@@ -7,5 +7,4 @@
     android:paddingBottom="@dimen/main_activity_vertical_margin" tools:context=".MainActivity"
     android:id="@+id/container">
 
-
 </FrameLayout>

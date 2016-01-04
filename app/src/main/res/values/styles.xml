@@ -53,4 +53,15 @@
         <item name="android:textSize">@dimen/textview_body_text_size</item>
     </style>
 
+
+    <!--Cannot connect, cannot fetch data-->
+    <style name="button_cannot_connect" parent="Detail_Activity_Headings_Textview">
+        <item name="android:background">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+    <style name="textview_cannot_connect" parent="Detail_Activity_Values_Textview">
+
+    </style>
+
+
 </resources>
