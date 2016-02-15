@@ -12,6 +12,9 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin">
 
+
+        <!--Basic Movie Details-->
+
         <ImageView
             android:layout_width="140dp"
             android:layout_height="wrap_content"
@@ -19,6 +22,16 @@
             android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             style="@style/Detail_Activity_Imageview"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_favorite_black_24dp"
+            android:padding="15dp"
+            android:id="@+id/button_add_favourite"
+            android:background="@color/colorAccent"
+            android:layout_below="@+id/releasedate_value_text"
+            android:layout_toRightOf="@+id/releasedate_value_text"/>
 
         <TextView
             android:id="@+id/rating_heading_text"
@@ -50,8 +63,62 @@
             android:id="@+id/description_text"
             style="@style/Detail_Activity_Description_Textview"
             android:layout_below="@id/poster_imageview"
-            android:text="jsfbjnasbvmdnsavdbsnmadsa Background sticky concurrent mark sweep GC freed 16741(1178KB) AllocSpace objects, 36(972KB) LOS objects, 19% free, 9MB/11MB, paused 787us total 125.390ms
-01-01 17:42:16.439 28846-28860/com.bharatramnani.mymovies W/art: Suspe dsand nsa dnsf ndsf  dsfn dsnf nds fds fdsfdsf ds fdsf ds fsdf sd fdsf df  sd  fsd f sdf s"/>
+            android:text="So where were you when the Science Fiction cinema sensation ‘Star Wars’ took shape and captured the imagination of the massive global moviegoers’ escapist expectations back in 1977? Regardless of whether you existed thirty-eight years ago or not, the legend of George Lucas’ highly-heralded SF blockbuster that shattered box office records worldwide was automatically engrained in your cinematic psyche. Now nearly four decades later, the motion picture phenomenon that took place in ‘a galaxy a long time ago…far, far away’ has come to expand its entertaining promise and prominence even after numerous servings of movie sequels, television specials and other fanfare attributes that promoted the ‘Star Wars’ agenda throughout the countless years."/>
+
+
+        <View
+            style="@style/Divider_View"
+            android:id="@+id/divider"
+            android:layout_below="@id/description_text"
+            />
+
+
+        <!--Trailers-->
+
+        <TextView
+            android:id="@+id/trailers_heading_text"
+            android:text="@string/trailers_heading_text"
+            style="@style/Detail_Activity_Headings_Textview"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_below="@id/divider"/>
+
+
+        <com.bharatramnani.mymovies.CustomGridView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/trailers_gridview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnWidth="@dimen/trailers_gridview_column_width"
+            android:numColumns="auto_fit"
+            android:verticalSpacing="@dimen/gridview_vertical_spacing"
+            android:horizontalSpacing="@dimen/gridview_horizontal_spacing"
+            android:gravity="center"
+            android:stretchMode="columnWidth"
+            android:layout_below="@id/trailers_heading_text"
+            />
+
+
+        <View
+            style="@style/Divider_View"
+            android:id="@+id/divider2"
+            android:layout_below="@id/trailers_gridview"
+            />
+
+
+        <!--Reviews-->
+
+        <TextView
+            android:id="@+id/reviews_heading_text"
+            android:text="@string/reviews_heading_text"
+            style="@style/Detail_Activity_Headings_Textview"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_below="@id/divider2"/>
+
+        <com.bharatramnani.mymovies.CustomListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/reviews_listview"
+            android:layout_below="@id/reviews_heading_text"/>
 
     </RelativeLayout>
 

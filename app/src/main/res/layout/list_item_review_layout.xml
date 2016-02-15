@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bharat Ramnani"
+        android:id="@+id/review_author"
+        style="@style/review_author"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/review_content"
+        style="@style/review_content"
+        android:text="Regardless of whether you existed thirty-eight years ago or not, the legend of George Lucas’ highly-heralded SF blockbuster that shattered box office records worldwide was automatically engrained in your cinematic psyche. Now nearly four decades later, the motion picture phenomenon that took place in ‘a galaxy. "/>
+
+</LinearLayout>

@@ -52,6 +52,10 @@
         <item name="android:lineSpacingMultiplier">1.15</item>
         <item name="android:textSize">@dimen/textview_body_text_size</item>
     </style>
+    <!--<style name="Detail_Activity_Trailers_Gridview">-->
+    <!--<item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>-->
+    <!--<item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>-->
+    <!--</style>-->
 
 
     <!--Cannot connect, cannot fetch data-->
@@ -60,8 +64,32 @@
         <item name="android:textColor">@color/colorWhite</item>
     </style>
     <style name="textview_cannot_connect" parent="Detail_Activity_Values_Textview">
-
     </style>
+
+
+    <!--Divider-->
+    <style name="Divider_View">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/darkerGray</item>
+        <item name="android:layout_marginTop">@dimen/divider_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/divider_vertical_margin</item>
+    </style>
+
+    <!--Reviews-->
+    <style name="review_author">
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+        <item name="android:textSize">@dimen/textview_values_size</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+    </style>
+    <style name="review_content">
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:textSize">@dimen/textview_body_text_size</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+    </style>
+
 
 
 </resources>

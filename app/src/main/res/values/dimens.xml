@@ -8,6 +8,9 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!--Divider margins-->
+    <dimen name="divider_vertical_margin">24dp</dimen>
+
     <!--Movie Poster-->
     <dimen name="gridview_horizontal_spacing">0dp</dimen>
     <dimen name="gridview_vertical_spacing">0dp</dimen>
@@ -18,5 +21,7 @@
     <dimen name="textview_headings_size">14sp</dimen>
     <dimen name="textview_values_size">20sp</dimen>
     <dimen name="textview_body_text_size">14sp</dimen>
+    <dimen name="trailers_gridview_column_width">160dp</dimen>
+    <dimen name="trailers_gridview_column_height">90dp</dimen>
 
 </resources>

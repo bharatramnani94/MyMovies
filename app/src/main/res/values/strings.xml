@@ -1,15 +1,19 @@
 <resources>
-    <string name="app_name">MyMovies</string>
+<string name="app_name">MyMovies</string>
 
-    <!--Menu Options / Action Bar Buttons-->
-    <string name="action_sort_by_popularity">Most Popular</string>
-    <string name="action_sort_by_ratings">Highest Rated</string>
-    <string name="title_activity_detail">DetailActivity</string>
-    <string name="action_settings">Settings</string>
+<!--Menu Options / Action Bar Buttons-->
+<string name="action_sort_by_popularity">Most Popular</string>
+<string name="action_sort_by_ratings">Highest Rated</string>
+<string name="action_view_favourites">View favourites</string>
+<string name="title_activity_detail">DetailActivity</string>
+<string name="action_settings">Settings</string>
 
-    <!--Detail Activity-->
-    <string name="rating_heading_text">Ratings</string>
-    <string name="release_date_heading_text">Released</string>
-    <string name="message_cannot_connect">Cannot connect to internet.</string>
-    <string name="button_message_cannot_connect">Try again</string>
+<!--Detail Activity-->
+<string name="rating_heading_text">Ratings</string>
+<string name="release_date_heading_text">Released</string>
+<string name="message_cannot_connect">Cannot connect to internet.</string>
+<string name="button_message_cannot_connect">Try again</string>
+<string name="trailers_heading_text">Trailers</string>
+<string name="reviews_heading_text">Reviews</string>
 </resources>
+
