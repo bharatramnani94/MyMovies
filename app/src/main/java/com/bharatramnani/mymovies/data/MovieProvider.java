@@ -60,12 +60,12 @@ public class MovieProvider extends ContentProvider {
 //            }
             // "movie"
             case MOVIE_ID: {
-                retCursor = getMovieForId(uri, projection, sortOrder);
+                retCursor = getMovieForId(uri, projection, selection, selectionArgs, sortOrder);
                 break;
             }
             // "movies"
             case MOVIES: {
-                retCursor = getMovies(uri, projection, sortOrder);
+                retCursor = getMovies(uri, projection, selection, selectionArgs, sortOrder);
                 break;
             }
             // "reviews"
@@ -113,23 +113,23 @@ public class MovieProvider extends ContentProvider {
 //        return cursor;
 //    }
 
-    private Cursor getMovies(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getMovies(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
-        Cursor cursor = db.query(MovieContract.MoviesEntry.TABLE_NAME, projection, null, null, null, null, sortOrder );
+        Cursor cursor = db.query(MovieContract.MoviesEntry.TABLE_NAME,projection, selection, selectionArgs, null, null, sortOrder);
         return cursor;
     }
 
-    private Cursor getMovieForId(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getMovieForId(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
         String movie_id = MovieContract.getMovieIdFromUri(uri);
 
         SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-        final String selection = sMoviesIdSelectionString;
-        final String[] selectionArgs = new String[] {movie_id};
+//        final String selection = sMoviesIdSelectionString;
+//        final String[] selectionArgs = new String[] {movie_id};
 
-        Cursor cursor = db.query(MovieContract.MoviesEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.query(MovieContract.MoviesEntry.TABLE_NAME,projection, selection, selectionArgs, null, null, sortOrder);
         return cursor;
     }
 
@@ -220,6 +220,7 @@ public class MovieProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
+        String mov_id = MovieContract.getMovieIdFromUri(uri);
         int returnRowCount;
 
         if (null == selection)  selection = "1";
@@ -233,6 +234,10 @@ public class MovieProvider extends ContentProvider {
 //                returnRowCount = db.delete(MoviesContract.ReviewEntry.TABLE_NAME, selection, selectionArgs);
 //                break;
 //            }
+             case MOVIE_ID: {
+                 returnRowCount = db.delete(MoviesEntry.TABLE_NAME, MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + "=?", new String[] {mov_id});
+                 break;
+             }
             case MOVIES: {
                 returnRowCount = db.delete(MovieContract.MoviesEntry.TABLE_NAME, selection, selectionArgs);
                 break;

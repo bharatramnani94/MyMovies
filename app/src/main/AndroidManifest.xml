@@ -27,6 +27,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.bharatramnani.mymovies.MainActivity" />
         </activity>
+        <provider
+            android:authorities="com.bharatramnani.mymovies"
+            android:name="com.bharatramnani.mymovies.data.MovieProvider"
+            />
     </application>
 
 </manifest>

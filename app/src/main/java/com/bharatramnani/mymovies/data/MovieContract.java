@@ -1,7 +1,6 @@
 package com.bharatramnani.mymovies.data;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -37,13 +36,13 @@ public class MovieContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
 
 
-        public static Uri buildMovieUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
-
-//        public static Uri buildMovieUri(int movie_id) {
-//            return CONTENT_URI.buildUpon().appendPath(String.valueOf(movie_id)).build();
+//        public static Uri buildMovieUri(int id) {
+//            return ContentUris.withAppendedId(CONTENT_URI, id);
 //        }
+
+        public static Uri buildMovieUri(long movie_id) {
+            return CONTENT_URI.buildUpon().appendPath(String.valueOf(movie_id)).build();
+        }
 
 
 

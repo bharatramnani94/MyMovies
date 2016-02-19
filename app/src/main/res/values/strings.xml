@@ -15,5 +15,7 @@
 <string name="button_message_cannot_connect">Try again</string>
 <string name="trailers_heading_text">Trailers</string>
 <string name="reviews_heading_text">Reviews</string>
+    <string name="removed_movie_from_favorites">This movie has been removed from your Favourites collection.</string>
+    <string name="added_movie_to_favorites">Added this movie to Favourites.</string>
 </resources>
 

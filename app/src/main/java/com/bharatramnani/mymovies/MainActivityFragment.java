@@ -24,8 +24,10 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bharatramnani.mymovies.data.MovieContract;
+import com.bharatramnani.mymovies.data.MovieDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +40,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -99,8 +100,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private void updateMovies(int sort_criteria) {
 
-        if (sort_criteria == R.id.action_view_favourites)
-            new FetchFavoriteMoviesTask(getContext()).execute();
+        if (sort_criteria == R.string.action_view_favourites)
+            new FetchFavoriteMoviesTask().execute();
         else
             new FetchMoviesTask().execute(sort_criteria);
     }
@@ -131,18 +132,21 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 updateMovies(R.string.action_sort_by_popularity);
                 preferenceEditor.putString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_POPULAR);
                 preferenceEditor.commit();
+                Log.d(LOG_TAG, "Popularity menu button clicked.");
                 return true;
 
             case R.id.action_sort_by_ratings:
                 updateMovies(R.string.action_sort_by_ratings);
                 preferenceEditor.putString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_RATINGS);
                 preferenceEditor.commit();
+                Log.d(LOG_TAG, "Ratings menu button clicked.");
                 return true;
 
             case R.id.action_view_favourites:
                 updateMovies(R.string.action_view_favourites);
                 preferenceEditor.putString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_FAVOURITES);
                 preferenceEditor.commit();
+                Log.d(LOG_TAG, "Favourites menu button clicked.");
                 return true;
         }
 
@@ -163,44 +167,44 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         if (sort_preference.equals(R.string.action_view_favourites)) {
             // TODO
             // QUERYING FAVOURITES FROM DATABASE
-            mfavouriteMoviesAdapter = new FavouriteMoviesAdapter(getContext(), null, 0);
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView adapterView, View view, int position, long id) {
-                    Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-                    if (cursor != null) {
+//            mfavouriteMoviesAdapter = new FavouriteMoviesAdapter(getContext(), null, 0);
 
-                        int idx_movie_id = cursor.getColumnIndex(MovieContract.MoviesEntry._ID);
-                        int movie_id = cursor.getInt(idx_movie_id);
-                        Intent intent = new Intent(getActivity(), DetailActivity.class)
-                                .setData(MovieContract.MoviesEntry.buildMovieUri(movie_id));
-                        startActivity(intent);
-                    }
-                }
-            });
+//            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView adapterView, View view, int position, long id) {
+//                    Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+//                    if (cursor != null) {
+//
+//                        int idx_movie_id = cursor.getColumnIndex(MovieContract.MoviesEntry._ID);
+//                        int movie_id = cursor.getInt(idx_movie_id);
+//                        Intent intent = new Intent(getActivity(), DetailActivity.class)
+//                                .setData(MovieContract.MoviesEntry.buildMovieUri(movie_id));
+//                        startActivity(intent);
+//                    }
+//                }
+//            });
 
-            Cursor moviesCursor = getActivity().getContentResolver().query(MovieContract.MoviesEntry.CONTENT_URI, null, null, null, null);
-            mfavouriteMoviesAdapter = new FavouriteMoviesAdapter(getContext(), moviesCursor, 0);
-            gridView.setAdapter(mfavouriteMoviesAdapter);
+//            Cursor moviesCursor = getActivity().getContentResolver().query(MovieContract.MoviesEntry.CONTENT_URI, null, null, null, null);
+            updateMovies(R.string.action_view_favourites);
 
         }
         else {
             // QUERYING FROM NETWORK
-            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Movie movie = mMoviesAdapter.getItem(position);
-                    Intent intent = new Intent(getActivity(), DetailActivity.class);
-                    intent.putExtra("MovieDetails", movie);
-                    startActivity(intent);
-                }
-            });
-
-            mMoviesAdapter = new MoviesListAdapter(
-                    getActivity(),
-                    moviesList
-            );
-            gridView.setAdapter(mMoviesAdapter);
+//            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                    Movie movie = mMoviesAdapter.getItem(position);
+//                    Intent intent = new Intent(getActivity(), DetailActivity.class);
+//                    intent.putExtra("MovieDetails", movie);
+//                    startActivity(intent);
+//                }
+//            });
+//
+//            mMoviesAdapter = new MoviesListAdapter(
+//                    getActivity(),
+//                    moviesList
+//            );
+//            gridView.setAdapter(mMoviesAdapter);
         }
 
 
@@ -300,7 +304,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
-                Log.v(LOG_TAG, "Fetching data from API.");
+                Log.d(LOG_TAG, "Fetching data from API.");
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
@@ -355,10 +359,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         }
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
 //            if (progressBar == null)
 //                progressBar = (ProgressBar) getView().findViewById(R.id.loading_progress_bar);
 //            if (gridView == null)
@@ -366,11 +370,38 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //
 //            gridView.setVisibility(View.GONE);
 //            progressBar.setVisibility(View.VISIBLE);
-
-        }
+//
+//        }
 
         @Override
         protected void onPostExecute(Movie[] movies) {
+
+
+
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Movie movie = mMoviesAdapter.getItem(position);
+                    Intent intent = new Intent(getActivity(), DetailActivity.class);
+                    intent.putExtra("MovieDetails", movie);
+                    startActivity(intent);
+                }
+            });
+
+            mMoviesAdapter = new MoviesListAdapter(
+                    getActivity(),
+                    moviesList
+            );
+            gridView.setAdapter(mMoviesAdapter);
+
+
+
+
+
+
+
+
+
             if (movies != null) {
 
 //                Option 1
@@ -389,7 +420,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             }
             else {
 //                Unable to fetch data
-//                Toast.makeText(getContext(), "Unable to fetch data, Try again later.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Unable to fetch data, Try again later.", Toast.LENGTH_SHORT).show();
 //                cannot_connect_layout.setVisibility(View.VISIBLE);
             }
 
@@ -444,75 +475,162 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
 
-    public class FetchFavoriteMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
-
-        private Context mContext;
-
-        public FetchFavoriteMoviesTask(Context context) {
-            mContext = context;
-        }
-
-        private List<Movie> getFavoriteMoviesDataFromCursor(Cursor cursor) {
-            List<Movie> results = new ArrayList<>();
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    Movie movie = new Movie(cursor);
-                    results.add(movie);
-                } while (cursor.moveToNext());
-                cursor.close();
-            }
-            return results;
-        }
-
-        @Override
-        protected List<Movie> doInBackground(Void... params) {
-            Cursor cursor = mContext.getContentResolver().query(
-                    MovieContract.MoviesEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-            return getFavoriteMoviesDataFromCursor(cursor);
-        }
-
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-//            if (progressBar == null)
-//                progressBar = (ProgressBar) getView().findViewById(R.id.loading_progress_bar);
-//            if (gridView == null)
-//                gridView = (GridView) getView().findViewById(R.id.movies_gridview);
+//    public class FetchFavoriteMoviesTask extends AsyncTask<Void, Void, List<Movie>> {
 //
-//            gridView.setVisibility(View.GONE);
-//            progressBar.setVisibility(View.VISIBLE);
+//        private Context mContext;
+//
+//        public FetchFavoriteMoviesTask(Context context) {
+//            mContext = context;
+//        }
+//
+//        private List<Movie> getFavoriteMoviesDataFromCursor(Cursor cursor) {
+//            List<Movie> results = new ArrayList<>();
+//            if (cursor != null && cursor.moveToFirst()) {
+//                do {
+//                    Movie movie = new Movie(cursor);
+//                    results.add(movie);
+//                } while (cursor.moveToNext());
+//                cursor.close();
+//            }
+//            return results;
+//        }
+//
+//        @Override
+//        protected List<Movie> doInBackground(Void... params) {
+//            Cursor cursor = mContext.getContentResolver().query(
+//                    MovieContract.MoviesEntry.CONTENT_URI,
+//                    null,
+//                    null,
+//                    null,
+//                    null
+//            );
+//            return getFavoriteMoviesDataFromCursor(cursor);
+//        }
+//
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//
+////            if (progressBar == null)
+////                progressBar = (ProgressBar) getView().findViewById(R.id.loading_progress_bar);
+////            if (gridView == null)
+////                gridView = (GridView) getView().findViewById(R.id.movies_gridview);
+////
+////            gridView.setVisibility(View.GONE);
+////            progressBar.setVisibility(View.VISIBLE);
+//
+//        }
+//
+//
+//        @Override
+//        protected void onPostExecute(List<Movie> movies) {
+//            if (movies != null) {
+//                if (mfavouriteMoviesAdapter != null) {
+//                    moviesList.clear();
+//                    for (Movie m : movies)
+//                        moviesList.add(m);
+//
+////                    gridView.setVisibility(View.VISIBLE);
+//                    mfavouriteMoviesAdapter.notifyDataSetChanged();
+//                }
+//                else {
+//                    moviesList = new ArrayList<>();
+//                    moviesList.addAll(movies);
+////                    cannot_connect_layout.setVisibility(View.VISIBLE);
+//                }
+//
+////                progressBar.setVisibility(View.GONE);
+//            }
+//        }
 
-        }
 
+//    public class FetchFavoriteMoviesTask extends AsyncTask<Void, Void, Movie[]> {
+//
+//        public String LOG_TAG = FetchFavoriteMoviesTask.class.getSimpleName();
+//
+//        private Movie[] getFavoriteMoviesFromCursor(Cursor cursor) {
+//            if (cursor != null && cursor.moveToFirst()) {
+//                int no_of_favourites = cursor.getCount();
+//                movies = new Movie[no_of_favourites];
+//                do {
+//                    Movie movie = new Movie(cursor);
+//                    moviesList.add(movie);
+//                } while (cursor.moveToNext());
+//                cursor.close();
+//            }
+//            movies = (Movie[]) moviesList.toArray();
+//            return movies;
+//        }
+//
+//        @Override
+//        protected Movie[] doInBackground(Void... params) {
+//            Cursor cursor = getContext().getContentResolver().query(
+//                    MovieContract.MoviesEntry.CONTENT_URI,
+//                    null,
+//                    null,
+//                    null,
+//                    null
+//            );
+//            return getFavoriteMoviesFromCursor(cursor);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Movie[] movies) {
+//            if (movies != null) {
+//                if (mfavouriteMoviesAdapter != null) {
+//                    View lv = (View)mfavouriteMoviesAdapter.newView()
+//                    Log.d(LOG_TAG, "Added all movies from favourites");
+//                }
+//            }
+//        }
+//    }
+
+
+    public class FetchFavoriteMoviesTask extends AsyncTask<Void, Void, Cursor> {
+
+        public String LOG_TAG = FetchFavoriteMoviesTask.class.getSimpleName();
 
         @Override
-        protected void onPostExecute(List<Movie> movies) {
-            if (movies != null) {
-                if (mfavouriteMoviesAdapter != null) {
-                    moviesList.clear();
-                    for (Movie m : movies)
-                        moviesList.add(m);
+        protected Cursor doInBackground(Void... params) {
+//            Cursor cursor = getContext().getContentResolver().query(
+//                    MovieContract.MoviesEntry.CONTENT_URI,
+//                    null,
+//                    null,
+//                    null,
+//                    null
+//            );
 
-//                    gridView.setVisibility(View.VISIBLE);
-                    mfavouriteMoviesAdapter.notifyDataSetChanged();
-                }
-                else {
-                    moviesList = new ArrayList<>();
-                    moviesList.addAll(movies);
-//                    cannot_connect_layout.setVisibility(View.VISIBLE);
-                }
+            Cursor cursor = new MovieDbHelper(getContext()).getReadableDatabase().rawQuery("SELECT * FROM " + MovieContract.MoviesEntry.TABLE_NAME, null);
+            Log.d(LOG_TAG, "Fetched " + cursor.getCount() + "favourites in FetchFavouriteMoviesTask");
+            return cursor;
+        }
 
-//                progressBar.setVisibility(View.GONE);
-            }
+        @Override
+        protected void onPostExecute(Cursor cursor) {
+
+            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView adapterView, View view, int position, long id) {
+                    Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                    if (cursor != null) {
+
+                        Movie movie = new Movie(cursor);
+                        Intent intent = new Intent(getActivity(), DetailActivity.class);
+                        intent.putExtra("MovieDetails", movie);
+                        startActivity(intent);
+                    }
+                }
+            });
+
+            Log.d(LOG_TAG, "Count of cursor facourites: " + cursor.getCount());
+
+            mfavouriteMoviesAdapter = new FavouriteMoviesAdapter(getContext(), cursor, 0);
+            gridView.setAdapter(mfavouriteMoviesAdapter);
+            mfavouriteMoviesAdapter.notifyDataSetChanged();
+            Log.d(LOG_TAG, "Added all movies from favourites");
+
         }
     }
-
 
 }
