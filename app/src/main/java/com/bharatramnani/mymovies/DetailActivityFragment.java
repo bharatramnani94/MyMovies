@@ -271,7 +271,8 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             toast = Toast.makeText(getActivity(), getString(R.string.removed_movie_from_favorites), Toast.LENGTH_SHORT);
             toast.show();
             favourites_button.setImageResource(R.drawable.is_not_favorite);
-            mainActivityFragment.refreshList();
+            if (mainActivityFragment != null)
+                mainActivityFragment.refreshList();
 
         }
     }
@@ -305,7 +306,8 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             toast = Toast.makeText(getActivity(), getString(R.string.added_movie_to_favorites), Toast.LENGTH_SHORT);
             toast.show();
             favourites_button.setImageResource(R.drawable.is_favorite);
-            mainActivityFragment.refreshList();
+            if (mainActivityFragment != null)
+                mainActivityFragment.refreshList();
 
         }
     }

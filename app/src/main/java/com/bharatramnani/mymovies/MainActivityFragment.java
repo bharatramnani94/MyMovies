@@ -62,6 +62,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     GridView gridView;
     Movie[] movies;
     String sort_preference;
+    View rootView;
 
 
 
@@ -94,19 +95,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //            If no sort order preference found, then default to sort by popularity
         sort_preference = sharedPreferences.getString(KEY_PREFERENCE_SORT_ORDER, SORT_TYPE_POPULAR);
 
-        if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_MOVIES_LIST)) {
-            moviesList = new ArrayList<Movie>();
 
-            if (sort_preference.equals(SORT_TYPE_POPULAR))       // Sort by popularity
-                updateMovies(R.string.action_sort_by_popularity);
-            else if (sort_preference.equals(SORT_TYPE_RATINGS))                                                 // Sort by ratings
-                updateMovies(R.string.action_sort_by_ratings);
-            else if (sort_preference.equals(SORT_TYPE_FAVOURITES))
-                updateMovies(R.string.action_view_favourites);
-        }
-        else {
-            moviesList = savedInstanceState.getParcelableArrayList(KEY_SAVED_MOVIES_LIST);
-        }
+
+
 
     }
 
@@ -172,10 +163,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setRetainInstance(true);
-        android.support.v4.app.LoaderManager lm = getLoaderManager();
-        if (lm.getLoader(0) != null) {
-            lm.initLoader(0, null, null);
-        }
+//        android.support.v4.app.LoaderManager lm = getLoaderManager();
+//        if (lm.getLoader(0) != null) {
+//            lm.initLoader(0, null, null);
+//        }
     }
 
     @Override
@@ -183,16 +174,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView) rootView.findViewById(R.id.movies_gridview);
         progressBar = (ProgressBar) rootView.findViewById(R.id.loading_progress_bar);
         cannot_connect_layout = (LinearLayout) rootView.findViewById(R.id.container_cannot_connect);
 
-        if (sort_preference.equals(R.string.action_view_favourites)) {
-            updateMovies(R.string.action_view_favourites);
+        if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_MOVIES_LIST)) {
+            moviesList = new ArrayList<Movie>();
+
+            if (sort_preference.equals(SORT_TYPE_POPULAR))       // Sort by popularity
+                updateMovies(R.string.action_sort_by_popularity);
+            else if (sort_preference.equals(SORT_TYPE_RATINGS))                                                 // Sort by ratings
+                updateMovies(R.string.action_sort_by_ratings);
+            else if (sort_preference.equals(SORT_TYPE_FAVOURITES))
+                updateMovies(R.string.action_view_favourites);
         }
         else {
-//            updateMovies(sort_preference);
+            moviesList = savedInstanceState.getParcelableArrayList(KEY_SAVED_MOVIES_LIST);
         }
 
 
@@ -342,19 +340,19 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         }
 
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//
-//            if (progressBar == null)
-//                progressBar = (ProgressBar) getView().findViewById(R.id.loading_progress_bar);
-//            if (gridView == null)
-//                gridView = (GridView) getView().findViewById(R.id.movies_gridview);
-//
-//            gridView.setVisibility(View.GONE);
-//            progressBar.setVisibility(View.VISIBLE);
-//
-//        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            if (progressBar == null)
+                progressBar = (ProgressBar) rootView.findViewById(R.id.loading_progress_bar);
+            if (gridView == null)
+                gridView = (GridView) rootView.findViewById(R.id.movies_gridview);
+
+            gridView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+
+        }
 
         @Override
         protected void onPostExecute(Movie[] movies) {
@@ -398,17 +396,17 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 for (Movie m : movies)
                     moviesList.add(m);
 
-//                gridView.setVisibility(View.VISIBLE);
+                gridView.setVisibility(View.VISIBLE);
                 mMoviesAdapter.notifyDataSetChanged();
 
             }
             else {
 //                Unable to fetch data
                 Toast.makeText(getContext(), "Unable to fetch data, Try again later.", Toast.LENGTH_SHORT).show();
-//                cannot_connect_layout.setVisibility(View.VISIBLE);
+                cannot_connect_layout.setVisibility(View.VISIBLE);
             }
 
-//            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
 
         }
 
