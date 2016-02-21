@@ -3,7 +3,6 @@ package com.bharatramnani.mymovies;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -27,7 +26,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bharatramnani.mymovies.data.MovieContract;
-import com.bharatramnani.mymovies.data.MovieDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,6 +67,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public MainActivityFragment() {
     }
+
+
+
+    // Must be implemented by the activities containing this fragment
+    public interface Callback {
+        void onItemSelected(Movie movie);
+    }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -195,7 +202,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 //                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                    Movie movie = mMoviesAdapter.getItem(position);
 //                    Intent intent = new Intent(getActivity(), DetailActivity.class);
-//                    intent.putExtra("MovieDetails", movie);
+//                    intent.putExtra(DetailActivityFragment.DETAIL_MOVIE, movie);
 //                    startActivity(intent);
 //                }
 //            });
@@ -382,9 +389,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Movie movie = mMoviesAdapter.getItem(position);
-                    Intent intent = new Intent(getActivity(), DetailActivity.class);
-                    intent.putExtra("MovieDetails", movie);
-                    startActivity(intent);
+//                    Intent intent = new Intent(getActivity(), DetailActivity.class);
+//                    intent.putExtra(DetailActivityFragment.DETAIL_MOVIE, movie);
+//                    startActivity(intent);
+                    ((Callback) getActivity()).onItemSelected(movie);
                 }
             });
 
@@ -593,15 +601,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         @Override
         protected Cursor doInBackground(Void... params) {
-//            Cursor cursor = getContext().getContentResolver().query(
-//                    MovieContract.MoviesEntry.CONTENT_URI,
-//                    null,
-//                    null,
-//                    null,
-//                    null
-//            );
+            Cursor cursor = getContext().getContentResolver().query(
+                    MovieContract.MoviesEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
 
-            Cursor cursor = new MovieDbHelper(getContext()).getReadableDatabase().rawQuery("SELECT * FROM " + MovieContract.MoviesEntry.TABLE_NAME, null);
+//            Cursor cursor = new MovieDbHelper(getContext()).getReadableDatabase().rawQuery("SELECT * FROM " + MovieContract.MoviesEntry.TABLE_NAME, null);
             Log.d(LOG_TAG, "Fetched " + cursor.getCount() + "favourites in FetchFavouriteMoviesTask");
             return cursor;
         }
@@ -616,14 +624,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     if (cursor != null) {
 
                         Movie movie = new Movie(cursor);
-                        Intent intent = new Intent(getActivity(), DetailActivity.class);
-                        intent.putExtra("MovieDetails", movie);
-                        startActivity(intent);
+//                        Intent intent = new Intent(getActivity(), DetailActivity.class);
+//                        intent.putExtra(DetailActivityFragment.DETAIL_MOVIE, movie);
+//                        startActivity(intent);
+                        ((Callback) getActivity()).onItemSelected(movie);
                     }
                 }
             });
 
-            Log.d(LOG_TAG, "Count of cursor facourites: " + cursor.getCount());
+            Log.d(LOG_TAG, "Count of cursor favourites: " + cursor.getCount());
 
             mfavouriteMoviesAdapter = new FavouriteMoviesAdapter(getContext(), cursor, 0);
             gridView.setAdapter(mfavouriteMoviesAdapter);

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:name="com.bharatramnani.mymovies.MainActivityFragment"
+    android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/main_activity_horizontal_margin"
     android:paddingRight="@dimen/main_activity_horizontal_margin"
     android:paddingTop="@dimen/main_activity_vertical_margin"
     android:paddingBottom="@dimen/main_activity_vertical_margin" tools:context=".MainActivity"
-    android:id="@+id/container">
+    android:id="@+id/fragment_movies">
 
-</FrameLayout>
+</fragment>

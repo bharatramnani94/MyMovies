@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailActivityFragment extends android.support.v4.app.Fragment {
 
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
 
@@ -47,6 +47,8 @@ public class DetailActivityFragment extends Fragment {
     private static final int REVIEWS_LOADER = 0;
     private static final int TRAILERS_LOADER = 1;
     private static final int MOVIES_LOADER = 2;
+    public static final String TAG = "DETAIL_FRAGMENT_TAG";
+    public static final String DETAIL_MOVIE = "MovieDetails";
 
     public ArrayAdapter<Trailer> mTrailersAdapter;
     public ArrayAdapter<Review> mReviewsAdapter;
@@ -58,8 +60,8 @@ public class DetailActivityFragment extends Fragment {
     ArrayList<Trailer> trailerList;
     ArrayList<Review> reviewsList;
     Cursor favouriteMovieCursor;
-    ImageButton favourites_button;
     Toast toast;
+    ImageButton favourites_button;
 
 
     public DetailActivityFragment() {
@@ -68,8 +70,11 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        movie = (Movie) getActivity().getIntent().getParcelableExtra("MovieDetails");
-        getActivity().setTitle(movie.movie_title);
+//        movie = (Movie) getActivity().getIntent().getParcelableExtra(DETAIL_MOVIE);
+
+
+//        if (movie != null)
+//            getActivity().setTitle(movie.movie_title);
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_TRAILERS_LIST)) {
             trailerList = new ArrayList<Trailer>();
@@ -102,18 +107,31 @@ public class DetailActivityFragment extends Fragment {
 
         trailers_listview = (CustomGridView) rootView.findViewById(R.id.trailers_gridview);
         reviews_listview = (CustomListView) rootView.findViewById(R.id.reviews_listview);
-        favourites_button = (ImageButton) rootView.findViewById(R.id.button_add_favourite);
 
         trailers_listview.setExpanded(true);
 
-        new FetchTrailerTask().execute(movie.movie_id);
-        new FetchReviewsTask().execute(movie.movie_id);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            movie = arguments.getParcelable(DetailActivityFragment.DETAIL_MOVIE);
+        }
 
-        mTrailersAdapter = new TrailersListAdapter( getActivity(), trailerList);
-        mReviewsAdapter = new ReviewsListAdapter( getActivity(), reviewsList);
+        if (movie != null) {
+            getActivity().setTitle(movie.movie_title);
+            new FetchTrailerTask().execute(movie.movie_id);
+            new FetchReviewsTask().execute(movie.movie_id);
+        }
+
+        mTrailersAdapter = new TrailersListAdapter(getActivity(), trailerList);
+        mReviewsAdapter = new ReviewsListAdapter(getActivity(), reviewsList);
 
         trailers_listview.setAdapter(mTrailersAdapter);
         reviews_listview.setAdapter(mReviewsAdapter);
+
+        ScrollView detailFragmentLayout = (ScrollView) rootView.findViewById(R.id.detail_fragment_layout);
+        if (movie != null)
+            detailFragmentLayout.setVisibility(View.VISIBLE);
+        else
+            detailFragmentLayout.setVisibility(View.INVISIBLE);
 
         trailers_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -150,17 +168,26 @@ public class DetailActivityFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        TextView textview_ratings = (TextView)view.findViewById(R.id.rating_value_text);
-        textview_ratings.setText(movie.movie_vote_average.toString());
+        TextView textview_ratings = (TextView) view.findViewById(R.id.rating_value_text);
+        TextView textview_releaseDate = (TextView) view.findViewById(R.id.releasedate_value_text);
+        TextView textview_description = (TextView) view.findViewById(R.id.description_text);
+        ImageView imageView_poster = (ImageView) view.findViewById(R.id.poster_imageview);
+        favourites_button = (ImageButton) view.findViewById(R.id.button_add_favourite);
 
-        TextView textview_releaseDate = (TextView)view.findViewById(R.id.releasedate_value_text);
-        textview_releaseDate.setText(movie.movie_release_date);
+        if (movie != null) {
+            textview_ratings.setText(movie.movie_vote_average.toString());
+            textview_releaseDate.setText(movie.movie_release_date);
+            textview_description.setText(movie.movie_overview);
+            Picasso.with(getContext()).load(movie.movie_poster).into(imageView_poster);
+            if (isFavourite(getContext(), movie.movie_id))
+                favourites_button.setImageResource(R.drawable.ic_favorite_black_24dp);
+            else
+                favourites_button.setImageResource(R.drawable.ic_play_arrow_pink_24px);
 
-        TextView textview_description = (TextView)view.findViewById(R.id.description_text);
-        textview_description.setText(movie.movie_overview);
 
-        ImageView imageView_poster = (ImageView)view.findViewById(R.id.poster_imageview);
-        Picasso.with(getContext()).load(movie.movie_poster).into(imageView_poster);
+        }
+
+
 
         favourites_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,33 +241,24 @@ public class DetailActivityFragment extends Fragment {
                      null
              );
 
+
             Log.d(LOG_TAG, rowsDeleted + " rows deleted.");
             return rowsDeleted;
         }
 
         @Override
         protected void onPostExecute(Integer rowsDeleted) {
+            favourites_button.setImageResource(R.drawable.ic_play_arrow_pink_24px);
             if (toast != null) {
                 toast.cancel();
             }
             toast = Toast.makeText(getActivity(), getString(R.string.removed_movie_from_favorites), Toast.LENGTH_SHORT);
             toast.show();
+
         }
     }
 
     private class AddFavourite extends AsyncTask<Void, Void, Uri> {
-
-        @Override
-        protected void onPreExecute() {
-            Cursor cursor = getContext().getContentResolver().query(
-                    MovieContract.MoviesEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-            Log.d(LOG_TAG, "Before inserting, " + cursor.getCount() + " movies in db.");
-        }
 
         @Override
         protected Uri doInBackground(Void... params) {
@@ -268,15 +286,8 @@ public class DetailActivityFragment extends Fragment {
             }
             toast = Toast.makeText(getActivity(), getString(R.string.added_movie_to_favorites), Toast.LENGTH_SHORT);
             toast.show();
+            favourites_button.setImageResource(R.drawable.ic_favorite_black_24dp);
 
-            Cursor cursor = getContext().getContentResolver().query(
-                    MovieContract.MoviesEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-            Log.d(LOG_TAG, "After inserting, " + cursor.getCount() + " movies in db.");
         }
     }
 
