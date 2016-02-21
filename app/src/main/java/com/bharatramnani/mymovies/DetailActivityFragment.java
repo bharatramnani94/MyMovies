@@ -163,6 +163,7 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(KEY_SAVED_TRAILERS_LIST, trailerList);
+        outState.putParcelableArrayList(KEY_SAVED_REVIEWS_LIST, reviewsList);
         super.onSaveInstanceState(outState);
     }
 
