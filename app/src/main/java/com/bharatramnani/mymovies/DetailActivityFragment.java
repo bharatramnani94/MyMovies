@@ -7,8 +7,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -63,20 +68,27 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
     Toast toast;
     ImageButton favourites_button;
     MainActivityFragment mainActivityFragment;
+    ShareActionProvider mShareActionProvider;
 
 
     public DetailActivityFragment() {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (movie != null) {
+            inflater.inflate(R.menu.fragment_details_menu, menu);
+            MenuItem item = menu.findItem(R.id.action_share_movie_trailer);
+            mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+            mShareActionProvider.setShareIntent(createShareMovieIntent());
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mainActivityFragment = (MainActivityFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_movies);
-//        movie = (Movie) getActivity().getIntent().getParcelableExtra(DETAIL_MOVIE);
-
-
-//        if (movie != null)
-//            getActivity().setTitle(movie.movie_title);
 
         if(savedInstanceState == null || !savedInstanceState.containsKey(KEY_SAVED_TRAILERS_LIST)) {
             trailerList = new ArrayList<Trailer>();
@@ -89,7 +101,7 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             reviewsList = new ArrayList<Review>();
         }
         else {
-            trailerList = savedInstanceState.getParcelableArrayList(KEY_SAVED_REVIEWS_LIST);
+            reviewsList = savedInstanceState.getParcelableArrayList(KEY_SAVED_REVIEWS_LIST);
         }
     }
 
@@ -98,6 +110,7 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
 //        getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
 //        getLoaderManager().initLoader(TRAILERS_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -225,13 +238,13 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
     private class DeleteFavourite extends AsyncTask<Void, Void, Integer> {
         @Override
         protected Integer doInBackground(Void... params) {
-//            Approach 1 - Not working
+//            Approach 1
 //           int rowsDeleted = getActivity().getContentResolver().delete(
 //                   MovieContract.MoviesEntry.CONTENT_URI,
 //                   MovieContract.MoviesEntry.TABLE_NAME + "." + MovieContract.MoviesEntry._ID + " = ?",
 //                   new String[]{Integer.toString(movie.movie_id)}
 //           );
-//            Approach 2 - Not working
+//            Approach 2
            // int rowsDeleted = getActivity().getContentResolver().delete(
            //         MovieContract.MoviesEntry.CONTENT_URI,
            //         MovieContract.MoviesEntry.TABLE_NAME + "." + MovieContract.MoviesEntry._ID + " = " + Integer.toString(movie.movie_id),
@@ -295,6 +308,28 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             mainActivityFragment.refreshList();
 
         }
+    }
+
+
+
+    private Intent createShareMovieIntent() {
+        String trailerUrl;
+        if (trailers != null) {
+            try {
+                trailerUrl = trailers[0].trailer_url;
+            }
+            catch (Exception e) {
+                trailerUrl = " [No trailer] ";
+            }
+        }
+        else
+            trailerUrl = " [No trailer] ";
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, movie.movie_title + " : " +
+                 trailerUrl);
+        return shareIntent;
     }
 
 
@@ -527,6 +562,10 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
                     trailerList.add(t);
 
                 mTrailersAdapter.notifyDataSetChanged();
+
+                if (mShareActionProvider != null) {
+                    mShareActionProvider.setShareIntent(createShareMovieIntent());
+                }
 
             }
             else {

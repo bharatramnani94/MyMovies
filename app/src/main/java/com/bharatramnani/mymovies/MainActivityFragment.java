@@ -169,6 +169,16 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setRetainInstance(true);
+        android.support.v4.app.LoaderManager lm = getLoaderManager();
+        if (lm.getLoader(0) != null) {
+            lm.initLoader(0, null, null);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -179,52 +189,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         cannot_connect_layout = (LinearLayout) rootView.findViewById(R.id.container_cannot_connect);
 
         if (sort_preference.equals(R.string.action_view_favourites)) {
-            // TODO
-            // QUERYING FAVOURITES FROM DATABASE
-//            mfavouriteMoviesAdapter = new FavouriteMoviesAdapter(getContext(), null, 0);
-
-//            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView adapterView, View view, int position, long id) {
-//                    Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-//                    if (cursor != null) {
-//
-//                        int idx_movie_id = cursor.getColumnIndex(MovieContract.MoviesEntry._ID);
-//                        int movie_id = cursor.getInt(idx_movie_id);
-//                        Intent intent = new Intent(getActivity(), DetailActivity.class)
-//                                .setData(MovieContract.MoviesEntry.buildMovieUri(movie_id));
-//                        startActivity(intent);
-//                    }
-//                }
-//            });
-
-//            Cursor moviesCursor = getActivity().getContentResolver().query(MovieContract.MoviesEntry.CONTENT_URI, null, null, null, null);
             updateMovies(R.string.action_view_favourites);
-
         }
         else {
-            // QUERYING FROM NETWORK
-//            gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    Movie movie = mMoviesAdapter.getItem(position);
-//                    Intent intent = new Intent(getActivity(), DetailActivity.class);
-//                    intent.putExtra(DetailActivityFragment.DETAIL_MOVIE, movie);
-//                    startActivity(intent);
-//                }
-//            });
-//
-//            mMoviesAdapter = new MoviesListAdapter(
-//                    getActivity(),
-//                    moviesList
-//            );
-//            gridView.setAdapter(mMoviesAdapter);
+//            updateMovies(sort_preference);
         }
-
-
-
-
-
 
 
         //        Setting onclick to refresh button
