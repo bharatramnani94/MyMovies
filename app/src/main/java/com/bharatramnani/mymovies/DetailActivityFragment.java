@@ -62,6 +62,7 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
     Cursor favouriteMovieCursor;
     Toast toast;
     ImageButton favourites_button;
+    MainActivityFragment mainActivityFragment;
 
 
     public DetailActivityFragment() {
@@ -70,6 +71,7 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mainActivityFragment = (MainActivityFragment)getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_movies);
 //        movie = (Movie) getActivity().getIntent().getParcelableExtra(DETAIL_MOVIE);
 
 
@@ -180,9 +182,9 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             textview_description.setText(movie.movie_overview);
             Picasso.with(getContext()).load(movie.movie_poster).into(imageView_poster);
             if (isFavourite(getContext(), movie.movie_id))
-                favourites_button.setImageResource(R.drawable.ic_favorite_black_24dp);
+                favourites_button.setImageResource(R.drawable.is_favorite);
             else
-                favourites_button.setImageResource(R.drawable.ic_play_arrow_pink_24px);
+                favourites_button.setImageResource(R.drawable.is_not_favorite);
 
 
         }
@@ -254,6 +256,8 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             }
             toast = Toast.makeText(getActivity(), getString(R.string.removed_movie_from_favorites), Toast.LENGTH_SHORT);
             toast.show();
+            favourites_button.setImageResource(R.drawable.is_not_favorite);
+            mainActivityFragment.refreshList();
 
         }
     }
@@ -286,7 +290,8 @@ public class DetailActivityFragment extends android.support.v4.app.Fragment {
             }
             toast = Toast.makeText(getActivity(), getString(R.string.added_movie_to_favorites), Toast.LENGTH_SHORT);
             toast.show();
-            favourites_button.setImageResource(R.drawable.ic_favorite_black_24dp);
+            favourites_button.setImageResource(R.drawable.is_favorite);
+            mainActivityFragment.refreshList();
 
         }
     }

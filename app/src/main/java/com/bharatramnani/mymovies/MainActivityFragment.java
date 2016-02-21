@@ -68,6 +68,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public MainActivityFragment() {
     }
 
+    public void refreshList() {
+        if (mfavouriteMoviesAdapter != null) {
+            Cursor newCursor = getActivity().getContentResolver().query(MovieContract.MoviesEntry.CONTENT_URI,null,null,null,null);
+            mfavouriteMoviesAdapter.changeCursor(newCursor);
+            Log.d(LOG_TAG, "Updated movies list");
+        }
+    }
 
 
     // Must be implemented by the activities containing this fragment
